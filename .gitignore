@@ -1,0 +1,7 @@
+.rtk
+.git
+.venv
+album_art_manifest.csv
+album_art/
+__pycache__/
+
