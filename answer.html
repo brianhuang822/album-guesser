@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Album Guesser — Clue Master</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-page="answer">
+  <div class="topbar">
+    <span>Clue master</span>
+    <div class="jump">
+      <input id="jump-input" type="number" min="1" placeholder="rank">
+      <button id="jump-go">Go</button>
+    </div>
+  </div>
+  <main>
+    <div class="answer-card">
+      <img id="cover" alt="Album cover">
+      <h1 id="album"></h1>
+      <h2 id="artist"></h2>
+      <table id="details"></table>
+      <div class="pager">
+        <a id="prev">← prev</a>
+        <a id="next-link">next →</a>
+      </div>
+    </div>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>

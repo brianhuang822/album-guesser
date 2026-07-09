@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Album Guesser</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-page="game">
+  <div class="topbar">
+    <span id="stage-label"></span>
+    <div class="jump">
+      <input id="jump-input" type="number" min="1" placeholder="rank">
+      <button id="jump-go">Go</button>
+    </div>
+  </div>
+  <main>
+    <div class="art-frame">
+      <p id="loading" class="loading">Loading…</p>
+      <canvas id="art" hidden></canvas>
+    </div>
+    <ul id="clues"></ul>
+    <div id="answer">
+      <p class="album-name"></p>
+      <p class="artist-name"></p>
+      <p class="meta"></p>
+    </div>
+    <div class="controls">
+      <button id="next">Next clue</button>
+      <button id="reveal" class="danger">Reveal</button>
+    </div>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
