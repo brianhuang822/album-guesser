@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-07-09T23:48:26+00:00",
+  "generated_at": "2026-07-09T23:49:16+00:00",
   "source": "kworb.net (rankings) + iTunes Search API (artwork)",
-  "count": 200,
+  "count": 205,
   "albums": [
     {
       "rank": 1,
@@ -3402,6 +3402,91 @@
       "image_url": "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/6b/25/9b/6b259bc3-3e53-4339-80b0-5b50131c8901/888880771674.jpg/3000x3000bb.jpg",
       "image_file": "album_art/Christina_Aguilera_Christina_Aguilera_(Expanded_Edition)_1999.jpg",
       "match_score": 2.0
+    },
+    {
+      "rank": 277,
+      "artist": "Slipknot",
+      "album": "Vol. 3 The Subliminal Verses",
+      "kworb_album": "Vol. 3: The Subliminal Verses (Special Edition)",
+      "year": "2004",
+      "release_date": "2004-05-25",
+      "streams": 2781915427,
+      "track_count": 14,
+      "genre": "Metal",
+      "spotify_artist_id": "05fG473iIaoy82BF1aGhL8",
+      "spotify_album_id": "4ZDBQSIDIZRUBOG2OHcN3T",
+      "itunes_collection_id": 926184050,
+      "image_url": "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/43/3b/a9/433ba92d-79ed-6ddc-3436-0ba06a8c9fab/016861752309.jpg/3000x3000bb.jpg",
+      "image_file": "album_art/Slipknot_Vol._3_The_Subliminal_Verses_2004.jpg",
+      "match_score": 2.0
+    },
+    {
+      "rank": 279,
+      "artist": "Oasis",
+      "album": "(What's the Story) Morning Glory?",
+      "kworb_album": "(What's The Story) Morning Glory? [Remastered]",
+      "year": "1995",
+      "release_date": "1995-10-02",
+      "streams": 6259376624,
+      "track_count": 12,
+      "genre": "Indie Rock",
+      "spotify_artist_id": "2DaxqgrOhkeH0fpeiQq2f4",
+      "spotify_album_id": "1VW1MFNstaJuygaoTPkdCk",
+      "itunes_collection_id": 1517447039,
+      "image_url": "https://is1-ssl.mzstatic.com/image/thumb/Music113/v4/04/92/e0/0492e08b-cbcc-9969-9ad6-8f5a0888068c/5051961007107.jpg/3000x3000bb.jpg",
+      "image_file": "album_art/Oasis_(What's_the_Story)_Morning_Glory_1995.jpg",
+      "match_score": 2.0
+    },
+    {
+      "rank": 280,
+      "artist": "Little Mix",
+      "album": "Between Us (Deluxe Version)",
+      "kworb_album": "Between Us (The Mixers Edition)",
+      "year": "2021",
+      "release_date": "2021-11-12",
+      "streams": 7077570032,
+      "track_count": 26,
+      "genre": "Pop",
+      "spotify_artist_id": "3e7awlrlDSwF3iM0WBjGMp",
+      "spotify_album_id": "4pkTcvV4pTt3xDkdG4rcpz",
+      "itunes_collection_id": 1581465565,
+      "image_url": "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/f0/d9/d2/f0d9d29c-fbb0-bc9b-a346-2a96215edf8e/886449505890.jpg/3000x3000bb.jpg",
+      "image_file": "album_art/Little_Mix_Between_Us_(Deluxe_Version)_2021.jpg",
+      "match_score": 2.0
+    },
+    {
+      "rank": 281,
+      "artist": "The Notorious B.I.G.",
+      "album": "Music Inspired By Biggie: I Got A Story To Tell",
+      "kworb_album": "Music Inspired By Biggie: I Got A Story To Tell",
+      "year": "2021",
+      "release_date": "2021-03-01",
+      "streams": 6458629613,
+      "track_count": 14,
+      "genre": "Hip-Hop/Rap",
+      "spotify_artist_id": "5me0Irg2ANcsgc93uaYrpb",
+      "spotify_album_id": "0Y2G7k6Znc8iiYP7xiIADr",
+      "itunes_collection_id": 1555620958,
+      "image_url": "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/13/17/c7/1317c7a5-781b-bc77-7c01-f69c5071fdba/603497843480.jpg/3000x3000bb.jpg",
+      "image_file": "album_art/The_Notorious_B.I.G_Music_Inspired_By_Biggie_I_Got_A_Story_To_Tell_2021.jpg",
+      "match_score": 2.0
+    },
+    {
+      "rank": 283,
+      "artist": "Mitski",
+      "album": "Be the Cowboy",
+      "kworb_album": "Be the Cowboy",
+      "year": "2018",
+      "release_date": "2018-08-17",
+      "streams": 3074551817,
+      "track_count": 15,
+      "genre": "Indie Rock",
+      "spotify_artist_id": "2uYWxilOVlUdk4oV9DvwqK",
+      "spotify_album_id": "42cH7mrkfljkqkxA2Ip9Xq",
+      "itunes_collection_id": 1373892692,
+      "image_url": "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/04/bc/5e/04bc5edd-006a-a5d9-0f63-effb5956e44b/656605145068.jpg/3000x3000bb.jpg",
+      "image_file": "album_art/Mitski_Be_the_Cowboy_2018.jpg",
+      "match_score": 2.0
     }
   ],
   "excluded": [
@@ -3924,6 +4009,22 @@
       "spotify_artist_id": "6HaGTQPmzraVmaVxvz6EUc",
       "genre": "K-Pop",
       "reason": "genre: K-Pop"
+    },
+    {
+      "rank": 278,
+      "artist": "Tainy",
+      "album": "DATA",
+      "spotify_artist_id": "0GM7qgcRCORpGnfcN2tCiB",
+      "genre": "Urbano latino",
+      "reason": "genre: Urbano latino"
+    },
+    {
+      "rank": 282,
+      "artist": "Irshad Kamil",
+      "album": "Aashiqui 2",
+      "spotify_artist_id": "3GdSQUH1BRtl9UrrtuwJlP",
+      "genre": "Bollywood",
+      "reason": "genre: Bollywood"
     }
   ],
   "failures": [
