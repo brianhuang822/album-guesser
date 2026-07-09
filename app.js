@@ -56,7 +56,10 @@ function loadImage(src) {
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.onload = () => resolve(img);
-    img.onerror = () => reject(new Error("failed to load " + src));
+    // Deliberately vague: this can appear on the shared screen, and the
+    // image URL contains the artist and album name.
+    img.onerror = () =>
+      reject(new Error("couldn't load the cover image (run resize_images.py and redeploy?)"));
     img.src = src;
   });
 }
@@ -66,11 +69,23 @@ function loadImage(src) {
 async function initGame() {
   setupJump();
   const id = currentId();
+  const albums = await loadAlbums();
+
+  document.getElementById("random").addEventListener("click", () => {
+    const ranks = [...albums.keys()];
+    let pick;
+    do {
+      pick = ranks[Math.floor(Math.random() * ranks.length)];
+    } while (ranks.length > 1 && pick === id);
+    location.search = "?id=" + pick;
+  });
+
   if (id === null) {
-    showMessage("Add ?id=<rank> to the URL or use the box above to pick an album.");
+    showMessage(
+      "Hit Random, or add ?id=<rank> to the URL / use the box above to pick an album."
+    );
     return;
   }
-  const albums = await loadAlbums();
   const album = albums.get(id);
   if (!album) {
     showMessage(`No album for id ${id}.`);
