@@ -188,10 +188,30 @@ body[data-page="game"] .art-frame {
   background: #2a2a38;
 }
 
-/* Reveal lives in the topbar, far from the frequently-clicked
-   Next clue button, so it can't be hit by accident. */
-.topbar #reveal {
-  margin-left: 1.2rem;
+/* Controls hug the artwork: navigation above, Reveal on its own row
+   at the bottom — near everything, but never adjacent to Next clue. */
+.nav-bar,
+.reveal-row {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.nav-bar button,
+.reveal-row button {
+  font-size: 0.95rem;
+  padding: 0.35rem 1.1rem;
+}
+
+.nav-bar input {
+  font: inherit;
+  width: 4.5rem;
+  padding: 0.3rem 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #333;
+  background: var(--panel);
+  color: var(--text);
 }
 
 .result-banner {

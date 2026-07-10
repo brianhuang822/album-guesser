@@ -12,14 +12,13 @@
       <span id="stage-label"></span>
       <span id="timer"></span>
     </div>
-    <div class="jump">
+  </div>
+  <main>
+    <div class="nav-bar">
       <button id="random">Random</button>
       <input id="jump-input" type="number" min="1" placeholder="rank">
       <button id="jump-go">Go</button>
-      <button id="reveal" class="danger">Reveal</button>
     </div>
-  </div>
-  <main>
     <div class="art-frame">
       <p id="loading" class="loading">Loading…</p>
       <canvas id="art" hidden></canvas>
@@ -41,6 +40,9 @@
         <span id="lives" title="Wrong guesses left"></span>
       </div>
       <button id="next">Next clue</button>
+    </div>
+    <div class="reveal-row">
+      <button id="reveal" class="danger">Reveal</button>
     </div>
   </main>
   <script src="app.js"></script>

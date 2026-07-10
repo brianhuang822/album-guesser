@@ -101,8 +101,13 @@ function setupJump() {
 }
 
 function showMessage(text) {
-  document.querySelector("main").innerHTML = `<p class="message"></p>`;
-  document.querySelector(".message").textContent = text;
+  const main = document.querySelector("main");
+  const nav = main.querySelector(".nav-bar");
+  main.replaceChildren(...(nav ? [nav] : []));
+  const p = document.createElement("p");
+  p.className = "message";
+  p.textContent = text;
+  main.append(p);
 }
 
 function loadImage(src) {
