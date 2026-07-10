@@ -202,7 +202,10 @@ async function initGame() {
   const stageLabel = document.getElementById("stage-label");
   const nextBtn = document.getElementById("next");
   const revealBtn = document.getElementById("reveal");
-  const guessWrap = document.querySelector(".guess-wrap");
+  const controlsRow = document.querySelector(".controls");
+  const revealRow = document.querySelector(".reveal-row");
+  const frame = document.querySelector(".art-frame");
+  const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   // One cell per clue, mirroring the emoji share grid.
   const progressEl = document.getElementById("progress");
@@ -334,12 +337,29 @@ async function initGame() {
     applyStage();
   }
 
+  // Sharpen the cover in place: blend the full image over the current
+  // pixelated frame instead of swapping DOM nodes.
+  function sharpenCover(duration) {
+    ctx.imageSmoothingEnabled = true;
+    if (duration <= 0) {
+      ctx.drawImage(img, 0, 0, SIZE, SIZE);
+      return;
+    }
+    const start = performance.now();
+    (function step(t) {
+      const p = Math.min(1, (t - start) / duration);
+      ctx.globalAlpha = p;
+      ctx.drawImage(img, 0, 0, SIZE, SIZE);
+      ctx.globalAlpha = 1;
+      if (p < 1) requestAnimationFrame(step);
+    })(start);
+  }
+
   function reveal(outcome) {
     if (revealed) return;
     revealed = true;
     stopTimer();
     markPlayed(id);
-    canvas.replaceWith(img);
     if (outcome) {
       const banner = document.querySelector(".result-banner");
       banner.textContent = outcome === "won" ? "🎉 Correct!" : "❌ Out of guesses";
@@ -357,12 +377,40 @@ async function initGame() {
     if (album.spotify_artist_id)
       spotifyRow.append(spotifyLink("artist", album.spotify_artist_id, "Artist"));
     if (outcome) addShareButton(outcome);
-    document.getElementById("answer").style.display = "block";
-    clues.remove();
-    guessWrap.remove();
-    nextBtn.remove();
-    revealBtn.remove();
     stageLabel.textContent = "Revealed";
+
+    const answerEl = document.getElementById("answer");
+    const leaving = [clues, controlsRow, revealRow];
+
+    // Swap guessing UI for the answer, FLIP-animating the art so the
+    // relayout glides instead of jumping.
+    const finish = () => {
+      const before = frame.getBoundingClientRect();
+      leaving.forEach((el) => el.remove());
+      answerEl.style.display = "block";
+      if (reduceMotion) return;
+      const after = frame.getBoundingClientRect();
+      if (Math.abs(before.width - after.width) > 1 || Math.abs(before.top - after.top) > 1) {
+        frame.style.transformOrigin = "center top";
+        frame.style.transform =
+          `translateY(${before.top - after.top}px) scale(${before.width / after.width})`;
+        requestAnimationFrame(() => {
+          frame.style.transition = "transform 0.35s ease";
+          frame.style.transform = "";
+          setTimeout(() => (frame.style.transition = ""), 420);
+        });
+      }
+      answerEl.classList.add("enter");
+      requestAnimationFrame(() => answerEl.classList.add("in"));
+    };
+
+    sharpenCover(reduceMotion ? 0 : 500);
+    if (reduceMotion) {
+      finish();
+    } else {
+      leaving.forEach((el) => el.classList.add("fade-out"));
+      setTimeout(finish, 250);
+    }
   }
 
   /* Wordle-style shareable summary: one square per clue (🟨 seen,

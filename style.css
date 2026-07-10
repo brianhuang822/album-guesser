@@ -327,6 +327,24 @@ body[data-page="game"] .art-frame {
   display: none;
 }
 
+/* reveal choreography */
+.fade-out {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+#answer.enter {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+#answer.in {
+  opacity: 1;
+  transform: none;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
 .result-banner {
   display: none;
   font-size: clamp(1.4rem, 3.5vmin, 2rem);
