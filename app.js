@@ -93,15 +93,27 @@ function spotifyLink(kind, id, label) {
   return a;
 }
 
-// Blank the current round before leaving so a revealed answer can't
-// linger on screen while the next page loads.
-function navigate(query) {
+// Blank the current round, let the blank frame actually paint (the
+// browser keeps showing the last painted frame during navigation, and
+// it must not contain the answer), then leave.
+function blankAndGo(action) {
   document.body.classList.add("leaving");
-  location.search = query;
+  requestAnimationFrame(() => requestAnimationFrame(() => setTimeout(action, 0)));
 }
 
-// Also blank on refresh/close: the browser holds the last painted frame
-// during navigation, and it must not contain the answer.
+function navigate(query) {
+  blankAndGo(() => (location.search = query));
+}
+
+// Keyboard refresh goes through the same blank-first path.
+document.addEventListener("keydown", (e) => {
+  if (e.key === "F5" || ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "r")) {
+    e.preventDefault();
+    blankAndGo(() => location.reload());
+  }
+});
+
+// Last resort for reloads we can't intercept (toolbar button).
 window.addEventListener("beforeunload", () => {
   document.body.classList.add("leaving");
 });
@@ -574,7 +586,9 @@ async function initGame() {
   // truthy and would show the "Correct!" banner on a manual reveal.
   revealBtn.addEventListener("click", () => reveal());
   document.addEventListener("keydown", (e) => {
-    if (e.target.matches("input")) return;
+    if (e.target instanceof Element && e.target.matches("input")) return;
+    // Modifier combos are browser chords — Ctrl+R must reload, not reveal.
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
     if (e.key === "ArrowRight" || e.key === " ") {
       e.preventDefault();
       next();
