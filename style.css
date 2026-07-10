@@ -126,8 +126,105 @@ body[data-page="game"] .art-frame {
 
 .controls {
   display: flex;
-  gap: 0.8rem;
+  gap: 2rem;
   align-items: center;
+}
+
+.guess-wrap {
+  position: relative;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.guess-wrap input {
+  font: inherit;
+  font-size: 1.1rem;
+  width: min(24rem, 55vw);
+  padding: 0.55rem 0.9rem;
+  border-radius: 8px;
+  border: 1px solid #333;
+  background: var(--panel);
+  color: var(--text);
+}
+
+.guess-wrap input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.guess-wrap input.wrong {
+  border-color: var(--danger);
+  animation: shake 0.35s;
+}
+
+@keyframes shake {
+  20%, 60% { transform: translateX(-7px); }
+  40%, 80% { transform: translateX(7px); }
+}
+
+#suggestions {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  list-style: none;
+  background: var(--panel);
+  border: 1px solid #333;
+  border-radius: 8px;
+  overflow: hidden auto;
+  max-height: 40vh;
+  box-shadow: 0 -6px 24px rgba(0, 0, 0, 0.5);
+  z-index: 10;
+}
+
+#suggestions li {
+  padding: 0.45rem 0.9rem;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+#suggestions li:hover,
+#suggestions li.active {
+  background: #2a2a38;
+}
+
+/* Reveal lives in the topbar, far from the frequently-clicked
+   Next clue button, so it can't be hit by accident. */
+.topbar #reveal {
+  margin-left: 1.2rem;
+}
+
+.result-banner {
+  display: none;
+  font-size: clamp(1.4rem, 3.5vmin, 2rem);
+  font-weight: 700;
+  color: #2ee68a;
+  margin-bottom: 0.4rem;
+}
+
+.spotify-row {
+  display: flex;
+  justify-content: center;
+  gap: 0.8rem;
+  margin-top: 0.8rem;
+}
+
+.spotify-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: #1db954;
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1rem;
+  padding: 0.45rem 1.1rem;
+  border-radius: 999px;
+}
+
+.spotify-btn svg {
+  width: 1.25em;
+  height: 1.25em;
 }
 
 button {

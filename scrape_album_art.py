@@ -93,7 +93,49 @@ NON_ENGLISH_GENRES = {
     "salsa", "bachata", "merengue", "cumbia", "tango", "flamenco",
     "brazilian", "sertanejo", "mpb", "samba", "bossa", "fado", "chanson",
     "turkish", "arabic", "anime", "world", "worldwide", "french pop", "german pop",
+    # added after auditing a full run: Aventura was 'Musica tropical',
+    # A.R. Rahman was 'Tamil' -- neither was caught by the original list.
+    "tropical", "tamil", "telugu", "hindi", "punjabi", "kannada", "malayalam",
+    "marathi", "bhangra", "spanish",
 }
+
+# Albums confirmed non-English by MusicBrainz release language and/or a web check.
+# Genre and title heuristics cannot catch these: Rammstein is tagged 'Metal',
+# ROSALIA and Enrique Iglesias are 'Pop', Marshmello is a US artist whose 'Sugar
+# Papi' is a Spanish-language Latin album.
+VERIFIED_NON_ENGLISH = {
+    ("Bad Bunny", "Un Verano Sin Ti"),
+    ("Marshmello", "Sugar Papi"),
+    ("Bizarrap", "en dormir sin Madrid - EP"),
+    ("A.R. Rahman", "Raanjhanaa"),
+    ("ROSALÍA", "MOTOMAMI"),
+    ("Becky G", "MALA SANTA"),
+    ("Enrique Iglesias", "FINAL (Vol.1)"),
+    ("Rammstein", "Mutter"),
+    ("Aventura", "The Last"),
+    ("Rels B", "Flakk Daniel's Lp"),
+    ("Ninho", "Destin"),
+    ("Anitta", "Versions of Me"),  # trilingual; majority Spanish/Portuguese
+}
+
+# Not the artist's own studio album: soundtracks, scores, greatest-hits sets, EPs.
+NON_ALBUM_PATTERNS = re.compile(
+    r"(?i)(\bgreatest hits\b|\bplatinum hits\b|\bhits\b|\bvery best\b|\bthe best\b|"
+    r"\bessential\b|\banthology\b|\bchronicles\b|\bcollection\b|\bcompilation\b|"
+    r"\b-\s*EP\b|\bEP\b|\bsoundtrack\b|original motion picture|original score|"
+    r"\bthe musical\b|\bmixtape\b|past, present|"
+    # Box sets. Narrow on purpose: a bare '\bcomplete\b' would also strike
+    # Justin Bieber's 'Justice (The Complete Edition)', which is a real album.
+    r"\bbox set\b|\bcomplete\b[^,]{0,30}\brecordings\b)"
+)
+NON_ALBUM_GENRES = {"soundtrack"}
+MIN_TRACKS = 7  # below this it's an EP, not an album
+
+# Seasonal records. Excluded from the game even though they are real studio albums:
+# for Elvis and Sinatra a Christmas side-release out-streams their actual catalog.
+# 'holiday' and 'santa' are only safe as genres -- an album could be named either.
+SEASONAL_TITLE = re.compile(r"(?i)\b(christmas|xmas|noel|yuletide)\b")
+SEASONAL_GENRE = re.compile(r"(?i)\b(christmas|holiday)\b")
 
 # Function words. Two or more in one title is a strong non-English signal, and
 # they're rare enough in English titles to be safe. (Shakira's "Las Mujeres Ya No
@@ -101,7 +143,7 @@ NON_ENGLISH_GENRES = {
 NON_ENGLISH_WORDS = {
     "el", "la", "los", "las", "un", "una", "unos", "sin", "ti", "de", "del", "y",
     "que", "no", "mi", "mas", "por", "para", "con", "como", "yo", "tu", "su", "se",
-    "es", "son", "ya", "al", "lo", "le", "les", "nos", "muy",
+    "es", "son", "ya", "al", "lo", "le", "les", "nos", "muy", "en",
     "eu", "um", "uma", "nao", "meu", "mais",
     "je", "suis", "des", "une", "et", "est",
     "der", "die", "das", "und", "ich",
@@ -110,7 +152,12 @@ NON_ENGLISH_WORDS = {
 
 # Escape hatches for the heuristics above. Artist names, exact as kworb spells them.
 ALWAYS_EXCLUDE_ARTISTS = set()
-ALWAYS_KEEP_ARTISTS = set()
+
+# Verified English-language despite tripping a heuristic:
+#   Skrillex  - 'Jack Ü' trips the diacritic rule; he records in English
+#   Sean Paul - MusicBrainz tags one release of 'Mad Love' as Spanish; it is English
+#   Zedd      - German artist, English albums (country is not language)
+ALWAYS_KEEP_ARTISTS = {"Skrillex", "Sean Paul", "Zedd"}
 ALWAYS_KEEP_ALBUMS = set()  # album titles wrongly caught by LIVE_PATTERNS
 
 # Minimum title similarity before an iTunes album is accepted. Below this we report
@@ -183,6 +230,11 @@ def non_english_reason(artist, album, genre):
     if artist in ALWAYS_EXCLUDE_ARTISTS:
         return "manual"
 
+    album_key = normalize(album)
+    for known_artist, known_album in VERIFIED_NON_ENGLISH:
+        if artist == known_artist and normalize(known_album) == album_key:
+            return "verified non-English"
+
     folded_genre = fold(genre or "").lower()
     for token in NON_ENGLISH_GENRES:
         if token in folded_genre:
@@ -199,6 +251,28 @@ def non_english_reason(artist, album, genre):
 
     if has_diacritic(album):
         return "title diacritics"
+    return None
+
+
+def non_album_reason(title, genre, track_count):
+    """
+    Reject soundtracks, scores, greatest-hits sets, EPs and Christmas albums.
+
+    Checked against a full run: catches Queen's 'Bohemian Rhapsody' soundtrack,
+    Jason Derulo's 'Platinum Hits', Michael Jackson's 'HIStory', The Chainsmokers'
+    'Collage - EP', and Beyonce's 3-track 'Sasha Fierce (The Bonus Tracks) - EP'.
+    """
+    if title in ALWAYS_KEEP_ALBUMS:
+        return None
+    if fold(genre or "").lower() in NON_ALBUM_GENRES:
+        return f"genre: {genre}"
+    if SEASONAL_TITLE.search(title) or SEASONAL_GENRE.search(genre or ""):
+        return "christmas album"
+    match = NON_ALBUM_PATTERNS.search(fold(title))
+    if match:
+        return f"title: {match.group(0)}"
+    if track_count is not None and track_count < MIN_TRACKS:
+        return f"only {track_count} tracks"
     return None
 
 
@@ -233,20 +307,20 @@ def kworb_top_artists(session, limit):
     return artists
 
 
-def kworb_top_album(session, artist_id, skip_live=True):
+def kworb_albums(session, artist_id, skip_live=True):
     """
-    Return (title, spotify_album_id, streams) for the artist's top studio album.
+    Return [(title, spotify_album_id, streams), ...] highest-streamed first.
 
     kworb prefixes compilations and 'appears on' releases with a bare '^' text node
     in the title cell -- Justin Bieber's top row is the compilation 'The Best'.
     Live releases aren't marked at all, so they're matched by title; both Ed Sheeran
-    and Dua Lipa have a live album on top. In both cases we fall through to the next
-    highest-streamed album rather than dropping the artist.
+    and Dua Lipa have a live album on top. The caller walks this list so a rejected
+    album falls through to the next one instead of dropping the artist.
     """
     table = fetch_html(session, KWORB_ALBUMS.format(artist_id=artist_id)).find(
         "table", class_="sortable")
     if table is None or table.tbody is None:
-        return None
+        return []
 
     candidates = []
     for row in table.tbody.find_all("tr"):
@@ -271,7 +345,7 @@ def kworb_top_album(session, artist_id, skip_live=True):
             continue
         candidates.append((title, album_id.group(1), streams))
 
-    return max(candidates, key=lambda c: c[2]) if candidates else None
+    return sorted(candidates, key=lambda c: -c[2])
 
 
 # --------------------------------------------------------------------------
@@ -306,34 +380,37 @@ def itunes_artist(session, artist, delay):
     return None, None
 
 
-def itunes_best_album(session, artist_id, album, delay):
+def itunes_catalog(session, artist_id, delay):
     """
-    Pull the artist's whole album catalog and match locally.
-
-    Searching iTunes by album title is unreliable -- 'Un Verano Sin Ti' returns only
-    cover-song singles by unrelated artists -- so match against the artist's own
-    catalog instead.
+    The artist's whole album catalog, fetched once so candidates can be matched
+    locally. Searching iTunes by album title is unreliable -- 'Un Verano Sin Ti'
+    returns only cover-song singles by unrelated artists.
     """
     data = itunes_get(session, ITUNES_LOOKUP,
                       {"id": artist_id, "entity": "album", "limit": 200}, delay)
+    return [i for i in data.get("results", []) if i.get("wrapperType") == "collection"]
 
+
+def match_album(catalog, album):
+    """Closest catalog entry to `album`, or (None, best_score) below MATCH_FLOOR."""
     target = normalize(album)
     best = None
-    for item in data.get("results", []):
-        if item.get("wrapperType") != "collection":
-            continue
+    for item in catalog:
         title = normalize(item.get("collectionName", ""))
         if not title:
             continue
         score = difflib.SequenceMatcher(None, target, title).ratio()
         if title == target:
             score += 1.0  # exact normalized match beats any fuzzy one
-        if best is None or score > best[0]:
-            best = (score, item)
+        # Ties go to the release with more tracks, so the real album wins over a
+        # bonus-track EP that normalizes to the same title (Beyonce's Sasha Fierce).
+        key = (score, item.get("trackCount") or 0)
+        if best is None or key > best[0]:
+            best = (key, item)
 
-    if best is None or best[0] < MATCH_FLOOR:
-        return None, (best[0] if best else 0.0)
-    return best[1], best[0]
+    if best is None or best[0][0] < MATCH_FLOOR:
+        return None, (best[0][0] if best else 0.0)
+    return best[1], best[0][0]
 
 
 def artwork_url(item):
@@ -398,12 +475,24 @@ def main():
     albums, excluded, failures = [], [], []
 
     for rank, artist, spotify_artist_id in artists:
+        # A cached record must still satisfy the current filters. Reusing it blindly
+        # means a filter added later never applies to anyone already cached -- which
+        # is how a pre-filter album_data.json kept Bad Bunny and Rammstein in the game.
         previous = cached_albums.get(spotify_artist_id)
         if previous and (OUT_DIR / Path(previous["image_file"]).name).exists():
-            previous["rank"] = rank  # rankings shift between runs
-            albums.append(previous)
-            print(f"[{rank:3}] cached {previous['image_file']}")
-            continue
+            stale = None
+            if not args.keep_all:
+                stale = (non_english_reason(artist, previous["album"],
+                                            previous.get("artist_genre"))
+                         or non_album_reason(previous["album"], previous["genre"],
+                                             previous.get("track_count"))
+                         or (is_live(previous["album"]) and "live album" or None))
+            if not stale:
+                previous["rank"] = rank  # rankings shift between runs
+                albums.append(previous)
+                print(f"[{rank:3}] cached {previous['image_file']}")
+                continue
+            print(f"[{rank:3}] drop   {artist} - cached entry now fails filter ({stale})")
 
         skipped = cached_excluded.get(spotify_artist_id)
         if skipped and not args.keep_all:
@@ -414,10 +503,9 @@ def main():
 
         album_title = ""
         try:
-            top = kworb_top_album(session, spotify_artist_id, skip_live=not args.keep_all)
-            if not top:
+            candidates = kworb_albums(session, spotify_artist_id, skip_live=not args.keep_all)
+            if not candidates:
                 raise ValueError("no eligible albums on kworb")
-            album_title, spotify_album_id, streams = top
             time.sleep(0.5)
 
             artist_id, genre = itunes_artist(session, artist, args.delay)
@@ -425,19 +513,46 @@ def main():
                 raise ValueError("artist not found on iTunes")
             time.sleep(args.delay)
 
-            if not args.keep_all:
-                reason = non_english_reason(artist, album_title, genre)
-                if reason:
-                    excluded.append({"rank": rank, "artist": artist, "album": album_title,
+            catalog = itunes_catalog(session, artist_id, args.delay)
+
+            # Walk the artist's albums by streams until one survives every filter.
+            item = score = None
+            album_title = spotify_album_id = streams = None
+            reject = "no eligible albums"
+            # Michael Buble's seven highest-streamed albums are all Christmas
+            # records, so the window has to be deep enough to reach a real one.
+            for cand_title, cand_id, cand_streams in candidates[:15]:
+                if not args.keep_all:
+                    reason = non_english_reason(artist, cand_title, genre)
+                    if reason:
+                        reject = reason
+                        break  # language is a property of the artist: stop trying
+                found, found_score = match_album(catalog, cand_title)
+                if found is None:
+                    reject = f"no album match (best score {found_score:.2f})"
+                    continue
+                if not args.keep_all:
+                    reason = non_album_reason(found["collectionName"],
+                                              found.get("primaryGenreName"),
+                                              found.get("trackCount"))
+                    if reason:
+                        reject = f"not an album ({reason})"
+                        continue
+                item, score = found, found_score
+                album_title, spotify_album_id, streams = cand_title, cand_id, cand_streams
+                break
+
+            if item is None:
+                if not args.keep_all and reject and not reject.startswith(
+                        ("no album match", "not an album", "no eligible")):
+                    excluded.append({"rank": rank, "artist": artist,
+                                     "album": candidates[0][0],
                                      "spotify_artist_id": spotify_artist_id,
-                                     "genre": genre, "reason": reason})
-                    print(f"[{rank:3}] skip   {artist} - {album_title} ({reason})")
+                                     "genre": genre, "reason": reject})
+                    print(f"[{rank:3}] skip   {artist} - {candidates[0][0]} ({reject})")
                     time.sleep(args.delay)
                     continue
-
-            item, score = itunes_best_album(session, artist_id, album_title, args.delay)
-            if item is None:
-                raise ValueError(f"no album match (best score {score:.2f})")
+                raise ValueError(reject)
 
             image_url = artwork_url(item)
             if not image_url:
@@ -466,6 +581,10 @@ def main():
                 "streams": int(streams),
                 "track_count": item.get("trackCount"),
                 "genre": item.get("primaryGenreName") or genre,
+                # The artist's genre drives the language filter, and the album's
+                # genre differs from it -- keep both so a cached record can be
+                # re-validated offline.
+                "artist_genre": genre,
                 "spotify_artist_id": spotify_artist_id,
                 "spotify_album_id": spotify_album_id,
                 "itunes_collection_id": item.get("collectionId"),
@@ -475,6 +594,8 @@ def main():
             })
 
         except (Throttled, ValueError, requests.RequestException) as exc:
+            # album_title is None when no candidate ever matched.
+            album_title = album_title or ""
             manual = MUSICHOARDERS.format(artist=quote(artist), album=quote(album_title))
             failures.append({"rank": rank, "artist": artist, "album": album_title,
                              "error": str(exc), "manual_url": manual})

@@ -8,11 +8,15 @@
 </head>
 <body data-page="game">
   <div class="topbar">
-    <span id="stage-label"></span>
+    <div class="status">
+      <span id="stage-label"></span>
+      <span id="timer"></span>
+    </div>
     <div class="jump">
       <button id="random">Random</button>
       <input id="jump-input" type="number" min="1" placeholder="rank">
       <button id="jump-go">Go</button>
+      <button id="reveal" class="danger">Reveal</button>
     </div>
   </div>
   <main>
@@ -22,13 +26,21 @@
     </div>
     <ul id="clues"></ul>
     <div id="answer">
+      <p class="result-banner"></p>
       <p class="album-name"></p>
       <p class="artist-name"></p>
       <p class="meta"></p>
+      <p class="spotify-row"></p>
     </div>
     <div class="controls">
+      <div class="guess-wrap">
+        <ul id="suggestions" hidden></ul>
+        <input id="guess-input" type="text" autocomplete="off"
+               placeholder="Your guess: artist – album">
+        <button id="guess-go">Guess</button>
+        <span id="lives" title="Wrong guesses left"></span>
+      </div>
       <button id="next">Next clue</button>
-      <button id="reveal" class="danger">Reveal</button>
     </div>
   </main>
   <script src="app.js"></script>
