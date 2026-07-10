@@ -213,15 +213,22 @@ async function initGame() {
      box beside it applies immediately. */
   const timerEl = document.getElementById("timer");
   const timerInput = document.getElementById("timer-secs");
+  const pauseBtn = document.getElementById("timer-pause");
   let clueSeconds = DEFAULT_CLUE_SECONDS;
   let deadline = 0;
   let timerId = null;
+  let paused = false;
+  let remainingMs = 0; // frozen time while paused
 
-  function tickTimer() {
-    const left = Math.max(0, Math.ceil((deadline - Date.now()) / 1000));
+  function renderTime(left) {
     timerEl.textContent = `0:${String(left).padStart(2, "0")}`;
     timerEl.classList.toggle("low", left > 0 && left <= 5);
     timerEl.classList.toggle("expired", left === 0);
+  }
+
+  function tickTimer() {
+    const left = Math.max(0, Math.ceil((deadline - Date.now()) / 1000));
+    renderTime(left);
     if (left === 0) {
       if (stage < stages.length - 1) {
         next(); // applyStage restarts the countdown
@@ -233,6 +240,11 @@ async function initGame() {
   }
 
   function resetTimer() {
+    if (paused) {
+      remainingMs = clueSeconds * 1000;
+      renderTime(clueSeconds);
+      return;
+    }
     deadline = Date.now() + clueSeconds * 1000;
     if (timerId === null) timerId = setInterval(tickTimer, 200);
     tickTimer();
@@ -243,6 +255,7 @@ async function initGame() {
     timerId = null;
     timerEl.remove();
     timerInput.remove();
+    pauseBtn.remove();
   }
 
   timerInput.addEventListener("input", () => {
@@ -250,6 +263,22 @@ async function initGame() {
     if (Number.isFinite(v) && v >= 3) {
       clueSeconds = v;
       resetTimer();
+    }
+  });
+
+  pauseBtn.addEventListener("click", () => {
+    paused = !paused;
+    pauseBtn.textContent = paused ? "▶" : "⏸";
+    pauseBtn.title = paused ? "Resume auto-advance" : "Pause auto-advance";
+    timerEl.classList.toggle("paused", paused);
+    if (paused) {
+      remainingMs = Math.max(0, deadline - Date.now());
+      clearInterval(timerId);
+      timerId = null;
+    } else {
+      deadline = Date.now() + remainingMs;
+      timerId = setInterval(tickTimer, 200);
+      tickTimer();
     }
   });
 

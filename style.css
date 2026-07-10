@@ -243,6 +243,19 @@ body[data-page="game"] .art-frame {
   color: var(--dim);
 }
 
+.topbar .status button {
+  background: var(--panel);
+  color: var(--dim);
+  border: 1px solid #333;
+  font-size: 0.9rem;
+  padding: 0.2rem 0.6rem;
+}
+
+#timer.paused {
+  color: var(--dim);
+  animation: none;
+}
+
 #timer {
   color: var(--accent);
   font-weight: 700;
