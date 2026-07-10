@@ -2,6 +2,7 @@ const PIXEL_LEVELS = [3, 10, 30, 60];
 const DEFAULT_CLUE_SECONDS = 10;
 const MAX_WRONG_GUESSES = 3;
 const PLAYED_KEY = "albumGuesserPlayed";
+const TIMER_KEY = "albumGuesserClueSeconds";
 
 const SPOTIFY_ICON =
   '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
@@ -98,7 +99,15 @@ function spotifyLink(kind, id, label) {
 // it must not contain the answer), then leave.
 function blankAndGo(action) {
   document.body.classList.add("leaving");
-  requestAnimationFrame(() => requestAnimationFrame(() => setTimeout(action, 0)));
+  let done = false;
+  const go = () => {
+    if (!done) {
+      done = true;
+      action();
+    }
+  };
+  requestAnimationFrame(() => requestAnimationFrame(() => setTimeout(go, 0)));
+  setTimeout(go, 150); // a stalled frame must never block navigation
 }
 
 function navigate(query) {
@@ -200,6 +209,11 @@ async function initGame() {
     return;
   }
 
+  // Show the current rank in the jump box so the host can read it off
+  // the shared screen (the URL is hidden in fullscreen) and type it
+  // into answer.html on their phone.
+  document.getElementById("jump-input").value = id;
+
   const stages = [
     ...PIXEL_LEVELS.map((n) => ({ kind: "pixel", n })),
     { kind: "text", label: "Streams", value: formatStreams(album.streams) },
@@ -257,7 +271,12 @@ async function initGame() {
   const timerEl = document.getElementById("timer");
   const timerInput = document.getElementById("timer-secs");
   const pauseBtn = document.getElementById("timer-pause");
-  let clueSeconds = DEFAULT_CLUE_SECONDS;
+  const storedSeconds = Number.parseInt(localStorage.getItem(TIMER_KEY), 10);
+  let clueSeconds =
+    Number.isFinite(storedSeconds) && storedSeconds >= 3
+      ? storedSeconds
+      : DEFAULT_CLUE_SECONDS;
+  timerInput.value = clueSeconds;
   let deadline = 0;
   let timerId = null;
   let paused = false;
@@ -305,6 +324,11 @@ async function initGame() {
     const v = Number.parseInt(timerInput.value, 10);
     if (Number.isFinite(v) && v >= 3) {
       clueSeconds = v;
+      try {
+        localStorage.setItem(TIMER_KEY, String(v));
+      } catch {
+        /* storage unavailable — preference just won't persist */
+      }
       resetTimer();
     }
   });
