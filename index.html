@@ -4,18 +4,36 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Album Guesser</title>
+  <meta name="description"
+        content="Guess the album from its cover. It starts as a 3×3 blur and sharpens with every clue — how few do you need?">
+  <meta property="og:title" content="Album Guesser">
+  <meta property="og:description"
+        content="Guess the album from its cover. It starts as a 3×3 blur and sharpens with every clue.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 3 3'><rect x='0' y='0' width='1' height='1' fill='%23f2a33c'/><rect x='1' y='0' width='1' height='1' fill='%23e5484d'/><rect x='2' y='0' width='1' height='1' fill='%237e4bb3'/><rect x='0' y='1' width='1' height='1' fill='%233f88c5'/><rect x='1' y='1' width='1' height='1' fill='%23f5f3ee'/><rect x='2' y='1' width='1' height='1' fill='%232a9d8f'/><rect x='0' y='2' width='1' height='1' fill='%23e76f51'/><rect x='1' y='2' width='1' height='1' fill='%23ffd166'/><rect x='2' y='2' width='1' height='1' fill='%23457b9d'/></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&display=swap"
+        rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
-<body data-page="game">
-  <div class="topbar">
+<body data-page="game" class="booting">
+  <header class="site-head">
+    <a class="brand" href="index.html">
+      <span class="mark" aria-hidden="true"></span>
+      <span class="brand-text">
+        <span class="brand-name">Album Guesser</span>
+        <span class="brand-tag">Guess the album from its cover — it sharpens with every clue</span>
+      </span>
+    </a>
     <div class="status">
+      <div id="progress" aria-hidden="true"></div>
       <span id="stage-label"></span>
       <span id="timer"></span>
       <input id="timer-secs" type="number" min="3" max="600" value="10"
              title="Seconds per clue">
       <button id="timer-pause" title="Pause auto-advance">⏸</button>
     </div>
-  </div>
+  </header>
   <main>
     <div class="nav-bar">
       <button id="random">Random</button>

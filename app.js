@@ -93,11 +93,22 @@ function spotifyLink(kind, id, label) {
   return a;
 }
 
+// Blank the current round before leaving so a revealed answer can't
+// linger on screen while the next page loads.
+function navigate(query) {
+  document.body.classList.add("leaving");
+  location.search = query;
+}
+
+function ready() {
+  document.body.classList.remove("booting");
+}
+
 function setupJump() {
   const input = document.getElementById("jump-input");
   const go = () => {
     const id = Number.parseInt(input.value, 10);
-    if (Number.isFinite(id)) location.search = "?id=" + id;
+    if (Number.isFinite(id)) navigate("?id=" + id);
   };
   document.getElementById("jump-go").addEventListener("click", go);
   input.addEventListener("keydown", (e) => {
@@ -114,6 +125,7 @@ function showMessage(text) {
   p.className = "message";
   p.textContent = text;
   main.append(p);
+  ready();
 }
 
 function loadImage(src) {
@@ -146,7 +158,7 @@ async function initGame() {
       pool = ranks.filter((r) => r !== id);
     }
     if (pool.length === 0) return;
-    location.search = "?id=" + pool[Math.floor(Math.random() * pool.length)];
+    navigate("?id=" + pool[Math.floor(Math.random() * pool.length)]);
   });
 
   if (id === null) {
@@ -160,6 +172,7 @@ async function initGame() {
       h = Math.imul(h, 16777619);
     }
     const ranks = [...albums.keys()].sort((a, b) => a - b);
+    document.body.classList.add("leaving");
     location.replace("?id=" + ranks[(h >>> 0) % ranks.length]);
     return;
   }
@@ -184,6 +197,15 @@ async function initGame() {
   const nextBtn = document.getElementById("next");
   const revealBtn = document.getElementById("reveal");
   const guessWrap = document.querySelector(".guess-wrap");
+
+  // One cell per clue, mirroring the emoji share grid.
+  const progressEl = document.getElementById("progress");
+  const cells = stages.map(() => {
+    const c = document.createElement("span");
+    c.className = "cell";
+    progressEl.append(c);
+    return c;
+  });
 
   const img = await loadImage(webImagePath(album.image_file));
   document.getElementById("loading").remove();
@@ -296,6 +318,7 @@ async function initGame() {
     }
     stageLabel.textContent = `Clue ${stage + 1}/${stages.length}`;
     nextBtn.disabled = stage >= stages.length - 1;
+    cells.forEach((c, i) => c.classList.toggle("seen", i <= stage));
     resetTimer();
   }
 
@@ -316,6 +339,7 @@ async function initGame() {
       banner.textContent = outcome === "won" ? "🎉 Correct!" : "❌ Out of guesses";
       banner.classList.toggle("lost", outcome === "lost");
       banner.style.display = "block";
+      cells[stage].classList.add(outcome === "won" ? "won" : "lost");
     }
     document.querySelector(".album-name").textContent = album.album;
     document.querySelector(".artist-name").textContent = album.artist;
@@ -515,6 +539,8 @@ async function initGame() {
   if (Number.isFinite(clueParam)) {
     while (stage < Math.min(clueParam, stages.length) - 1) next();
   }
+
+  ready(); // first paint happens only now, with the round fully staged
 }
 
 /* ---------- answer page ---------- */
@@ -566,6 +592,7 @@ async function initAnswer() {
   else prev.remove();
   if (i < ranks.length - 1) next.href = "?id=" + ranks[i + 1];
   else next.remove();
+  ready();
 }
 
 const page = document.body.dataset.page;

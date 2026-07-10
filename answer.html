@@ -4,16 +4,30 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Album Guesser — Clue Master</title>
+  <meta name="description" content="Clue master view: full answers for every Album Guesser rank.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 3 3'><rect x='0' y='0' width='1' height='1' fill='%23f2a33c'/><rect x='1' y='0' width='1' height='1' fill='%23e5484d'/><rect x='2' y='0' width='1' height='1' fill='%237e4bb3'/><rect x='0' y='1' width='1' height='1' fill='%233f88c5'/><rect x='1' y='1' width='1' height='1' fill='%23f5f3ee'/><rect x='2' y='1' width='1' height='1' fill='%232a9d8f'/><rect x='0' y='2' width='1' height='1' fill='%23e76f51'/><rect x='1' y='2' width='1' height='1' fill='%23ffd166'/><rect x='2' y='2' width='1' height='1' fill='%23457b9d'/></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&display=swap"
+        rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
-<body data-page="answer">
-  <div class="topbar">
-    <span>Clue master</span>
-    <div class="jump">
-      <input id="jump-input" type="number" min="1" placeholder="rank">
-      <button id="jump-go">Go</button>
+<body data-page="answer" class="booting">
+  <header class="site-head">
+    <a class="brand" href="index.html">
+      <span class="mark" aria-hidden="true"></span>
+      <span class="brand-text">
+        <span class="brand-name">Album Guesser</span>
+        <span class="brand-tag">Clue master view — the answer for any rank, spoilers included</span>
+      </span>
+    </a>
+    <div class="status">
+      <div class="jump">
+        <input id="jump-input" type="number" min="1" placeholder="rank">
+        <button id="jump-go">Go</button>
+      </div>
     </div>
-  </div>
+  </header>
   <main>
     <div class="answer-card">
       <img id="cover" alt="Album cover">
