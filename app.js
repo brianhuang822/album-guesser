@@ -430,10 +430,30 @@ async function initGame() {
     items[activeIndex].scrollIntoView({ block: "nearest" });
   }
 
+  function shakeInput() {
+    guessInput.classList.remove("wrong");
+    void guessInput.offsetWidth; // restart the shake animation
+    guessInput.classList.add("wrong");
+  }
+
   function submitGuess() {
     if (revealed || !guessInput.value.trim()) return;
+    const key = normalize(guessInput.value);
+    // A guess must be one of the real options. Exact text counts, and a
+    // query narrowed down to a single match auto-completes — no need to
+    // click the dropdown.
+    let choice = options.find((o) => normalize(o) === key);
+    if (!choice) {
+      const matches = options.filter((o) => normalize(o).includes(key));
+      if (matches.length === 1) choice = matches[0];
+    }
     closeSuggestions();
-    if (normalize(guessInput.value) === answerKey) {
+    if (!choice) {
+      shakeInput(); // not an album — nudge, never costs a heart
+      return;
+    }
+    guessInput.value = choice;
+    if (normalize(choice) === answerKey) {
       reveal("won");
       return;
     }
@@ -444,9 +464,7 @@ async function initGame() {
       reveal("lost");
       return;
     }
-    guessInput.classList.remove("wrong");
-    void guessInput.offsetWidth; // restart the shake animation
-    guessInput.classList.add("wrong");
+    shakeInput();
     guessInput.select();
     next();
   }
