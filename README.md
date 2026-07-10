@@ -1,5 +1,7 @@
 # album-guesser
 
+**Play it now: https://brianhuang822.github.io/album-guesser**
+
 A static browser game for live play: the audience guesses the album/artist from
 progressively revealed clues. Host it on GitHub Pages — no build step, no backend.
 
