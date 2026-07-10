@@ -273,8 +273,8 @@ body[data-page="game"] .art-frame {
 }
 
 .art-frame {
-  width: min(68vmin, 620px);
-  height: min(68vmin, 620px);
+  width: min(80vmin, 900px);
+  height: min(80vmin, 900px);
   background: var(--panel);
   border-radius: 12px;
   overflow: hidden;
@@ -506,8 +506,8 @@ body[data-page="answer"] main {
 }
 
 .answer-card img {
-  width: min(50vmin, 420px);
-  height: min(50vmin, 420px);
+  width: min(56vmin, 520px);
+  height: min(56vmin, 520px);
   object-fit: cover;
   border-radius: 12px;
   box-shadow: 0 10px 44px rgba(0, 0, 0, 0.65);
