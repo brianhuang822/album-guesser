@@ -100,6 +100,12 @@ function navigate(query) {
   location.search = query;
 }
 
+// Also blank on refresh/close: the browser holds the last painted frame
+// during navigation, and it must not contain the answer.
+window.addEventListener("beforeunload", () => {
+  document.body.classList.add("leaving");
+});
+
 function ready() {
   document.body.classList.remove("booting");
 }

@@ -12,8 +12,14 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 3 3'><rect x='0' y='0' width='1' height='1' fill='%23f2a33c'/><rect x='1' y='0' width='1' height='1' fill='%23e5484d'/><rect x='2' y='0' width='1' height='1' fill='%237e4bb3'/><rect x='0' y='1' width='1' height='1' fill='%233f88c5'/><rect x='1' y='1' width='1' height='1' fill='%23f5f3ee'/><rect x='2' y='1' width='1' height='1' fill='%232a9d8f'/><rect x='0' y='2' width='1' height='1' fill='%23e76f51'/><rect x='1' y='2' width='1' height='1' fill='%23ffd166'/><rect x='2' y='2' width='1' height='1' fill='%23457b9d'/></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- Non-blocking font load: first paint must be instant so a refresh
+       replaces the previous page's held frame immediately. -->
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&display=swap"
-        rel="stylesheet">
+        rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&display=swap"
+          rel="stylesheet">
+  </noscript>
   <link rel="stylesheet" href="style.css">
 </head>
 <body data-page="game" class="booting">
