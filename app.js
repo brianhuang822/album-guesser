@@ -1,4 +1,4 @@
-const PIXEL_LEVELS = [3, 10, 30, 60];
+const PIXEL_LEVELS = [5, 10, 30, 60];
 const DEFAULT_CLUE_SECONDS = 10;
 const MAX_WRONG_GUESSES = 3;
 const PLAYED_KEY = "albumGuesserPlayed";
