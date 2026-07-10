@@ -1,5 +1,5 @@
 const PIXEL_LEVELS = [3, 10, 30, 60];
-const CLUE_SECONDS = 30;
+const DEFAULT_CLUE_SECONDS = 10;
 const MAX_WRONG_GUESSES = 3;
 const PLAYED_KEY = "albumGuesserPlayed";
 
@@ -144,9 +144,17 @@ async function initGame() {
   });
 
   if (id === null) {
-    showMessage(
-      "Hit Random, or add ?id=<rank> to the URL / use the box above to pick an album."
-    );
+    // No id: play the album of the day. Hash of the local date, so
+    // everyone visiting the bare URL gets the same album (Wordle-style).
+    const d = new Date();
+    const key = `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+    let h = 2166136261;
+    for (const ch of key) {
+      h ^= ch.charCodeAt(0);
+      h = Math.imul(h, 16777619);
+    }
+    const ranks = [...albums.keys()].sort((a, b) => a - b);
+    location.replace("?id=" + ranks[(h >>> 0) % ranks.length]);
     return;
   }
   const album = albums.get(id);
@@ -194,9 +202,12 @@ async function initGame() {
   let stage = 0; // index of the latest visible stage
   let revealed = false;
 
-  /* Per-clue countdown. Purely informational pressure: it never
-     advances or reveals anything on its own. */
+  /* Per-clue countdown. When it hits zero it advances to the next clue
+     and restarts; on the final clue it just stops. The seconds-per-clue
+     box beside it applies immediately. */
   const timerEl = document.getElementById("timer");
+  const timerInput = document.getElementById("timer-secs");
+  let clueSeconds = DEFAULT_CLUE_SECONDS;
   let deadline = 0;
   let timerId = null;
 
@@ -205,10 +216,18 @@ async function initGame() {
     timerEl.textContent = `0:${String(left).padStart(2, "0")}`;
     timerEl.classList.toggle("low", left > 0 && left <= 5);
     timerEl.classList.toggle("expired", left === 0);
+    if (left === 0) {
+      if (stage < stages.length - 1) {
+        next(); // applyStage restarts the countdown
+      } else {
+        clearInterval(timerId);
+        timerId = null;
+      }
+    }
   }
 
   function resetTimer() {
-    deadline = Date.now() + CLUE_SECONDS * 1000;
+    deadline = Date.now() + clueSeconds * 1000;
     if (timerId === null) timerId = setInterval(tickTimer, 200);
     tickTimer();
   }
@@ -217,7 +236,16 @@ async function initGame() {
     clearInterval(timerId);
     timerId = null;
     timerEl.remove();
+    timerInput.remove();
   }
+
+  timerInput.addEventListener("input", () => {
+    const v = Number.parseInt(timerInput.value, 10);
+    if (Number.isFinite(v) && v >= 3) {
+      clueSeconds = v;
+      resetTimer();
+    }
+  });
 
   function applyStage() {
     const s = stages[stage];
@@ -263,12 +291,55 @@ async function initGame() {
       spotifyRow.append(spotifyLink("album", album.spotify_album_id, "Album"));
     if (album.spotify_artist_id)
       spotifyRow.append(spotifyLink("artist", album.spotify_artist_id, "Artist"));
+    if (outcome) addShareButton(outcome);
     document.getElementById("answer").style.display = "block";
     clues.remove();
     guessWrap.remove();
     nextBtn.remove();
     revealBtn.remove();
     stageLabel.textContent = "Revealed";
+  }
+
+  /* Wordle-style shareable summary: one square per clue (🟨 seen,
+     🟩/🟥 the clue it ended on, ⬜ never needed) plus hearts. */
+  function shareText(outcome) {
+    const grid = stages
+      .map((_, i) => {
+        if (i === stage) return outcome === "won" ? "🟩" : "🟥";
+        return i < stage ? "🟨" : "⬜";
+      })
+      .join("");
+    const hearts =
+      "❤️".repeat(livesLeft) + "🖤".repeat(MAX_WRONG_GUESSES - livesLeft);
+    const url = location.origin + location.pathname + "?id=" + id;
+    return [
+      `Album Guesser #${id} — clue ${stage + 1}/${stages.length}`,
+      grid,
+      hearts,
+      url,
+    ].join("\n");
+  }
+
+  function addShareButton(outcome) {
+    const btn = document.createElement("button");
+    btn.id = "share";
+    btn.textContent = "Share result";
+    btn.addEventListener("click", async () => {
+      const text = shareText(outcome);
+      try {
+        await navigator.clipboard.writeText(text);
+      } catch {
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        document.body.append(ta);
+        ta.select();
+        document.execCommand("copy");
+        ta.remove();
+      }
+      btn.textContent = "Copied!";
+      setTimeout(() => (btn.textContent = "Share result"), 1500);
+    });
+    document.querySelector(".share-row").append(btn);
   }
 
   /* Guess bar with autocomplete over "Artist – Album". */

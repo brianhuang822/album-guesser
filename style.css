@@ -232,6 +232,17 @@ body[data-page="game"] .art-frame {
   gap: 1.1rem;
 }
 
+.topbar .status input {
+  font: inherit;
+  font-size: 0.9rem;
+  width: 3.6rem;
+  padding: 0.2rem 0.4rem;
+  border-radius: 6px;
+  border: 1px solid #333;
+  background: var(--panel);
+  color: var(--dim);
+}
+
 #timer {
   color: var(--accent);
   font-weight: 700;
@@ -283,6 +294,18 @@ body[data-page="game"] .art-frame {
 .spotify-btn svg {
   width: 1.25em;
   height: 1.25em;
+}
+
+.share-row {
+  margin-top: 0.6rem;
+}
+
+#share {
+  background: var(--panel);
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  font-size: 1rem;
+  padding: 0.45rem 1.3rem;
 }
 
 button {
