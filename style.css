@@ -202,6 +202,44 @@ body[data-page="game"] .art-frame {
   margin-bottom: 0.4rem;
 }
 
+.result-banner.lost {
+  color: var(--danger);
+}
+
+.topbar .status {
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
+}
+
+#timer {
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 1.15rem;
+  font-variant-numeric: tabular-nums;
+}
+
+#timer.low {
+  color: var(--danger);
+}
+
+#timer.expired {
+  color: var(--danger);
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  50% { opacity: 0.25; }
+}
+
+#lives {
+  align-self: center;
+  color: var(--danger);
+  font-size: 1.35rem;
+  letter-spacing: 0.12em;
+  user-select: none;
+}
+
 .spotify-row {
   display: flex;
   justify-content: center;

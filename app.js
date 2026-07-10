@@ -321,16 +321,23 @@ async function initGame() {
 
   function submitGuess() {
     if (revealed || !guessInput.value.trim()) return;
+    closeSuggestions();
     if (normalize(guessInput.value) === answerKey) {
-      closeSuggestions();
-      reveal(true);
+      reveal("won");
       return;
     }
-    closeSuggestions();
+    // Wrong: lose a life and pay for it with a free clue.
+    livesLeft -= 1;
+    renderLives();
+    if (livesLeft <= 0) {
+      reveal("lost");
+      return;
+    }
     guessInput.classList.remove("wrong");
     void guessInput.offsetWidth; // restart the shake animation
     guessInput.classList.add("wrong");
     guessInput.select();
+    next();
   }
 
   guessInput.addEventListener("input", () => {
@@ -356,7 +363,9 @@ async function initGame() {
   guessBtn.addEventListener("click", submitGuess);
 
   nextBtn.addEventListener("click", next);
-  revealBtn.addEventListener("click", reveal);
+  // No event argument may leak into reveal(outcome) — a MouseEvent is
+  // truthy and would show the "Correct!" banner on a manual reveal.
+  revealBtn.addEventListener("click", () => reveal());
   document.addEventListener("keydown", (e) => {
     if (e.target.matches("input")) return;
     if (e.key === "ArrowRight" || e.key === " ") {
