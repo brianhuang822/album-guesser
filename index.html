@@ -20,25 +20,23 @@
   <header class="site-head">
     <a class="brand" href="index.html">
       <span class="mark" aria-hidden="true"></span>
-      <span class="brand-text">
-        <span class="brand-name">Album Guesser</span>
-        <span class="brand-tag">Guess the album from its cover — it sharpens with every clue</span>
-      </span>
+      <span class="brand-name">Album Guesser</span>
     </a>
-    <div class="status">
-      <div id="progress" aria-hidden="true"></div>
-      <span id="stage-label"></span>
-      <span id="timer"></span>
-      <input id="timer-secs" type="number" min="3" max="600" value="10"
-             title="Seconds per clue">
-      <button id="timer-pause" title="Pause auto-advance">⏸</button>
-    </div>
+    <p class="brand-tag">Guess the album from its cover — it sharpens with every clue</p>
   </header>
   <main>
     <div class="nav-bar">
       <button id="random">Random</button>
       <input id="jump-input" type="number" min="1" placeholder="rank">
       <button id="jump-go">Go</button>
+      <span class="sep" aria-hidden="true"></span>
+      <div id="progress" aria-hidden="true"></div>
+      <span id="stage-label"></span>
+      <span class="sep" aria-hidden="true"></span>
+      <span id="timer"></span>
+      <input id="timer-secs" type="number" min="3" max="600" value="10"
+             title="Seconds per clue">
+      <button id="timer-pause" title="Pause auto-advance">⏸</button>
     </div>
     <div class="art-frame">
       <p id="loading" class="loading">Loading…</p>

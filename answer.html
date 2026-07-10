@@ -16,19 +16,15 @@
   <header class="site-head">
     <a class="brand" href="index.html">
       <span class="mark" aria-hidden="true"></span>
-      <span class="brand-text">
-        <span class="brand-name">Album Guesser</span>
-        <span class="brand-tag">Clue master view — the answer for any rank, spoilers included</span>
-      </span>
+      <span class="brand-name">Album Guesser</span>
     </a>
-    <div class="status">
-      <div class="jump">
-        <input id="jump-input" type="number" min="1" placeholder="rank">
-        <button id="jump-go">Go</button>
-      </div>
-    </div>
+    <p class="brand-tag">Clue master view — the answer for any rank, spoilers included</p>
   </header>
   <main>
+    <div class="nav-bar">
+      <input id="jump-input" type="number" min="1" placeholder="rank">
+      <button id="jump-go">Go</button>
+    </div>
     <div class="answer-card">
       <img id="cover" alt="Album cover">
       <h1 id="album"></h1>

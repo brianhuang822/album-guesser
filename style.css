@@ -20,7 +20,9 @@
 }
 
 body {
-  background: var(--bg);
+  background:
+    radial-gradient(120vmin 70vmin at 50% -12vmin, #1b1822 0%, transparent 65%),
+    var(--bg);
   color: var(--text);
   font-family: var(--body);
   min-height: 100vh;
@@ -42,25 +44,23 @@ body.leaving main {
 .site-head {
   width: 100%;
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   align-items: center;
-  gap: 0.8rem 1.5rem;
-  flex-wrap: wrap;
-  padding: 0.6rem 1.1rem;
-  border-bottom: 1px solid var(--line);
+  gap: 0.15rem;
+  padding: 1.1rem 1rem 0;
 }
 
 .brand {
   display: flex;
   align-items: center;
-  gap: 0.7rem;
+  gap: 0.8rem;
   text-decoration: none;
   color: inherit;
 }
 
 .mark {
-  width: 38px;
-  height: 38px;
+  width: 40px;
+  height: 40px;
   border-radius: 9px;
   flex-shrink: 0;
   background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 3 3'><rect x='0' y='0' width='1' height='1' fill='%23f2a33c'/><rect x='1' y='0' width='1' height='1' fill='%23e5484d'/><rect x='2' y='0' width='1' height='1' fill='%237e4bb3'/><rect x='0' y='1' width='1' height='1' fill='%233f88c5'/><rect x='1' y='1' width='1' height='1' fill='%23f5f3ee'/><rect x='2' y='1' width='1' height='1' fill='%232a9d8f'/><rect x='0' y='2' width='1' height='1' fill='%23e76f51'/><rect x='1' y='2' width='1' height='1' fill='%23ffd166'/><rect x='2' y='2' width='1' height='1' fill='%23457b9d'/></svg>");
@@ -68,24 +68,23 @@ body.leaving main {
 }
 
 .brand-name {
-  display: block;
   font-family: var(--display);
-  font-weight: 750;
-  font-size: 1.3rem;
-  line-height: 1.15;
-  letter-spacing: 0.005em;
+  font-weight: 800;
+  font-size: clamp(1.6rem, 3.4vmin, 2.1rem);
+  line-height: 1.1;
+  letter-spacing: 0.02em;
 }
 
 .brand-tag {
-  display: block;
   color: var(--dim);
-  font-size: 0.8rem;
+  font-size: 0.92rem;
+  text-align: center;
 }
 
-.status {
-  display: flex;
-  align-items: center;
-  gap: 0.9rem;
+.sep {
+  width: 1px;
+  height: 1.1rem;
+  background: var(--line);
 }
 
 #progress {
@@ -192,35 +191,33 @@ input {
   color: var(--text);
 }
 
-/* quiet chrome: nav, timer controls, clue-master jump */
-.nav-bar button,
-.status button,
-.jump button {
-  background: var(--panel);
+/* quiet chrome: the control strip above the art */
+.nav-bar button {
+  background: transparent;
   color: var(--dim);
   border-color: var(--line);
   font-size: 0.92rem;
-  padding: 0.35rem 1rem;
+  padding: 0.32rem 0.95rem;
+  border-radius: 999px;
 }
 
-.nav-bar button:hover,
-.status button:hover,
-.jump button:hover {
+.nav-bar button:hover {
   color: var(--text);
   border-color: var(--dim);
 }
 
-.nav-bar input,
-.status input,
-.jump input {
+.nav-bar input {
   width: 4.2rem;
   font-size: 0.92rem;
-  padding: 0.32rem 0.5rem;
+  padding: 0.3rem 0.55rem;
+  border-radius: 999px;
+  text-align: center;
+  background: transparent;
   color: var(--dim);
 }
 
-.status input {
-  width: 3.6rem;
+#timer-secs {
+  width: 3.4rem;
 }
 
 /* ---------- game layout ---------- */
@@ -249,7 +246,19 @@ body[data-page="game"] .art-frame {
   aspect-ratio: 1 / 1;
 }
 
-.nav-bar,
+.nav-bar {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.55rem;
+  padding: 0.4rem 0.9rem;
+  background: color-mix(in srgb, var(--panel) 72%, transparent);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+}
+
 .reveal-row {
   flex-shrink: 0;
   display: flex;
