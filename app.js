@@ -171,11 +171,11 @@ async function initGame() {
 
   const stages = [
     ...PIXEL_LEVELS.map((n) => ({ kind: "pixel", n })),
+    { kind: "text", label: "Streams", value: formatStreams(album.streams) },
+    { kind: "text", label: "Year", value: album.year },
+    { kind: "text", label: "Genre", value: album.genre },
     { kind: "text", label: "Album", value: wordShape(album.album) },
     { kind: "text", label: "Artist", value: wordShape(album.artist) },
-    { kind: "text", label: "Streams", value: formatStreams(album.streams) },
-    { kind: "text", label: "Genre", value: album.genre },
-    { kind: "text", label: "Year", value: album.year },
   ];
 
   const canvas = document.getElementById("art");

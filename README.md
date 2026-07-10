@@ -11,7 +11,7 @@ progressively revealed clues. Host it on GitHub Pages — no build step, no back
   picks the same album for everyone that day, Wordle-style
 - **Game screen** (share/project this): `index.html?id=<rank>`
   - **Next clue** (or `→`/`Space`) advances through 9 clues:
-    pixelated 3×3 → 10×10 → 30×30 → 60×60 → album initials → artist initials → streams → genre → year
+    pixelated 3×3 → 10×10 → 30×30 → 60×60 → streams → year → genre → album initials → artist initials
   - **Reveal** (top-right, or `R`) shows the full cover, answer, and Spotify links
   - A countdown per clue (default 10s, adjustable in the top-left box)
     auto-advances to the next clue when it reaches zero
