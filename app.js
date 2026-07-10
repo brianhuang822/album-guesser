@@ -37,12 +37,18 @@ function wordShape(name) {
 }
 
 // Case-, accent-, dash- and whitespace-insensitive comparison key.
+// Applied to both the options and the typed guess, so plain ASCII can
+// match fancy names: "jack u" → Jack Ü, "asap" → A$AP, "divide" → ÷,
+// "ones" → One’s.
 function normalize(s) {
   return s
     .toLowerCase()
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .replace(/[–—]/g, "-")
+    .replace(/÷/g, "divide")
+    .replace(/\$/g, "s")
+    .replace(/['’‘]/g, "")
     .replace(/\s+/g, " ")
     .trim();
 }
