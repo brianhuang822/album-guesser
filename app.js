@@ -173,6 +173,8 @@ function loadImage(src) {
 async function initGame() {
   setupJump();
 
+  let startRound = () => {}; // replaced once the round is staged
+
   /* Live mode (presenting from a shared screen): the cover fills the
      screen, the host controls collapse into a side rail, and the guess
      bar disappears — the room shouts answers instead of typing them. */
@@ -180,6 +182,7 @@ async function initGame() {
   function applyLive(on) {
     document.body.classList.toggle("live", on);
     liveBtn.classList.toggle("on", on);
+    if (!on) startRound(); // normal mode always has a visible clue
   }
   function toggleLive() {
     const on = !document.body.classList.contains("live");
@@ -270,7 +273,6 @@ async function initGame() {
 
   const img = await loadImage(webImagePath(album.image_file));
   document.getElementById("loading").remove();
-  canvas.hidden = false;
 
   const SIZE = 960;
   canvas.width = SIZE;
@@ -290,6 +292,7 @@ async function initGame() {
 
   let stage = 0; // index of the latest visible stage
   let revealed = false;
+  let waiting = false; // live mode: round staged but held blank until started
 
   /* Per-clue countdown. When it hits zero it advances to the next clue
      and restarts; on the final clue it just stops. The seconds-per-clue
@@ -328,6 +331,10 @@ async function initGame() {
   }
 
   function resetTimer() {
+    if (waiting) {
+      renderTime(clueSeconds); // armed, but nothing counts down yet
+      return;
+    }
     if (paused) {
       remainingMs = clueSeconds * 1000;
       renderTime(clueSeconds);
@@ -394,6 +401,7 @@ async function initGame() {
   }
 
   function next() {
+    if (waiting) return startRound(); // Space/→ before the round starts
     if (revealed || stage >= stages.length - 1) return;
     stage += 1;
     applyStage();
@@ -419,6 +427,7 @@ async function initGame() {
 
   function reveal(outcome) {
     if (revealed) return;
+    if (waiting) startRound(); // un-blank the art before sharpening it
     revealed = true;
     stopTimer();
     markPlayed(id);
@@ -649,15 +658,37 @@ async function initGame() {
     }
   });
 
-  applyStage();
-
   // ?clue=N restores progress after an accidental refresh mid-round.
   const clueParam = Number.parseInt(
     new URLSearchParams(location.search).get("clue"),
     10
   );
-  if (Number.isFinite(clueParam)) {
-    while (stage < Math.min(clueParam, stages.length) - 1) next();
+
+  /* In live mode a fresh round starts blank: no cover, no countdown,
+     just a start button in the frame. That gives the host time to look
+     up the answer on their phone (answer.html) before the room sees
+     anything — clue 1 alone can be enough to call the album. */
+  const startBtn = document.getElementById("start-clue");
+  startRound = () => {
+    if (!waiting) return;
+    waiting = false;
+    startBtn.remove();
+    canvas.hidden = false;
+    applyStage(); // draws clue 1 and starts the countdown
+  };
+  if (document.body.classList.contains("live") && !Number.isFinite(clueParam)) {
+    waiting = true;
+    startBtn.hidden = false;
+    startBtn.addEventListener("click", startRound);
+    stageLabel.textContent = "Ready";
+    nextBtn.disabled = true;
+    renderTime(clueSeconds);
+  } else {
+    canvas.hidden = false;
+    applyStage();
+    if (Number.isFinite(clueParam)) {
+      while (stage < Math.min(clueParam, stages.length) - 1) next();
+    }
   }
 
   ready(); // first paint happens only now, with the round fully staged
