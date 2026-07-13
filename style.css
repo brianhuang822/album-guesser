@@ -521,6 +521,13 @@ body.live .guess-wrap {
   display: none;
 }
 
+/* app.js adds .cursor-idle once the mouse stops moving, so the pointer
+   isn't left sitting on top of the cover art. */
+body.live.cursor-idle,
+body.live.cursor-idle * {
+  cursor: none;
+}
+
 /* Live rounds start blank behind this button, so the host can check
    the answer on their phone before anyone sees clue 1. */
 #start-clue {
