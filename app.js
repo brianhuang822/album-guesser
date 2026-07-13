@@ -175,6 +175,22 @@ async function initGame() {
 
   let startRound = () => {}; // replaced once the round is staged
 
+  /* An idle pointer parked on top of the cover art steals the room's
+     eyes, so live mode hides it as soon as the mouse stops moving; any
+     movement brings it back. Solo players keep their cursor. */
+  let cursorTimer;
+  function pokeCursor() {
+    document.body.classList.remove("cursor-idle");
+    clearTimeout(cursorTimer);
+    if (document.body.classList.contains("live")) {
+      cursorTimer = setTimeout(
+        () => document.body.classList.add("cursor-idle"),
+        1000,
+      );
+    }
+  }
+  document.addEventListener("mousemove", pokeCursor);
+
   /* Live mode (presenting from a shared screen): the cover fills the
      screen, the host controls collapse into a side rail, and the guess
      bar disappears — the room shouts answers instead of typing them. */
@@ -182,6 +198,7 @@ async function initGame() {
   function applyLive(on) {
     document.body.classList.toggle("live", on);
     liveBtn.classList.toggle("on", on);
+    pokeCursor();
     if (!on) startRound(); // normal mode always has a visible clue
   }
   function toggleLive() {
