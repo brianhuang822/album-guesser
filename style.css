@@ -246,6 +246,18 @@ body[data-page="game"] .art-frame {
   aspect-ratio: 1 / 1;
 }
 
+/* The panel isn't a box normally — its children lay out as direct
+   flex items of <main>. It only becomes the side rail in live mode. */
+.panel {
+  display: contents;
+}
+
+/* The art sits first in the DOM (live mode wants it on the left),
+   but the nav strip still renders above it. */
+body[data-page="game"] .nav-bar {
+  order: -1;
+}
+
 .nav-bar {
   flex-shrink: 0;
   display: flex;
@@ -488,6 +500,70 @@ body[data-page="game"] .art-frame {
   color: var(--dim);
   text-align: center;
   max-width: 34rem;
+}
+
+/* ---------- live mode (presenting from a shared screen) ---------- */
+
+.nav-bar button.on {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+/* No guessing in live mode: the room shouts, the host reveals. */
+body.live .site-head,
+body.live .guess-wrap {
+  display: none;
+}
+
+@media (min-width: 720px) {
+  /* The cover fills the height of the screen; everything else stacks
+     in a narrow rail beside it. */
+  body.live[data-page="game"] main {
+    flex-direction: row;
+    gap: 1.8rem;
+  }
+
+  body.live[data-page="game"] .art-frame {
+    width: min(calc(100vh - 2.4rem), calc(100vw - 22rem));
+    height: auto;
+    aspect-ratio: 1 / 1;
+  }
+
+  body.live[data-page="game"] .panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    flex: 0 1 19rem;
+    min-width: 13rem;
+  }
+
+  body.live .nav-bar {
+    border-radius: 14px;
+    padding: 0.5rem 0.7rem;
+  }
+
+  body.live .nav-bar .sep {
+    display: none;
+  }
+
+  body.live .controls {
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+
+  body.live #clues li {
+    font-size: clamp(1rem, 2.1vmin, 1.35rem);
+    text-align: center;
+  }
+
+  body.live #answer .album-name {
+    font-size: clamp(1.4rem, 3.4vmin, 2.2rem);
+  }
+
+  body.live #answer .artist-name {
+    font-size: clamp(1.1rem, 2.4vmin, 1.5rem);
+  }
 }
 
 /* ---------- answer page ---------- */

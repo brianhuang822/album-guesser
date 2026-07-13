@@ -3,6 +3,7 @@ const DEFAULT_CLUE_SECONDS = 10;
 const MAX_WRONG_GUESSES = 3;
 const PLAYED_KEY = "albumGuesserPlayed";
 const TIMER_KEY = "albumGuesserClueSeconds";
+const LIVE_KEY = "albumGuesserLive";
 
 const SPOTIFY_ICON =
   '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
@@ -171,6 +172,31 @@ function loadImage(src) {
 
 async function initGame() {
   setupJump();
+
+  /* Live mode (presenting from a shared screen): the cover fills the
+     screen, the host controls collapse into a side rail, and the guess
+     bar disappears — the room shouts answers instead of typing them. */
+  const liveBtn = document.getElementById("live-toggle");
+  function applyLive(on) {
+    document.body.classList.toggle("live", on);
+    liveBtn.classList.toggle("on", on);
+  }
+  function toggleLive() {
+    const on = !document.body.classList.contains("live");
+    try {
+      localStorage.setItem(LIVE_KEY, on ? "1" : "0");
+    } catch {
+      /* storage unavailable — preference just won't persist */
+    }
+    applyLive(on);
+  }
+  try {
+    applyLive(localStorage.getItem(LIVE_KEY) === "1");
+  } catch {
+    /* storage unavailable — start in normal mode */
+  }
+  liveBtn.addEventListener("click", toggleLive);
+
   const id = currentId();
   const albums = await loadAlbums();
 
@@ -618,6 +644,8 @@ async function initGame() {
       next();
     } else if (e.key.toLowerCase() === "r") {
       reveal();
+    } else if (e.key.toLowerCase() === "l") {
+      toggleLive();
     }
   });
 
